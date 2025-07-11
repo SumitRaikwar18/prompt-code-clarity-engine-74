@@ -1,5 +1,38 @@
 # Welcome to your Lovable project
 
+## Code Solution Generator
+
+An AI-powered application that generates high-quality, production-ready code solutions in both Java and Python. Features include image OCR for problem input, comprehensive error handling, and a feedback system for continuous improvement.
+
+### Features
+
+- **Dual Language Solutions**: Get solutions in both Java and Python
+- **Image OCR**: Upload images of coding problems using Google Cloud Vision API
+- **High-Quality Code**: Production-ready code with error handling and best practices
+- **Feedback System**: Report issues and help improve the AI
+- **Interactive Testing**: Built-in test cases and examples
+- **Performance Optimized**: Efficient algorithms and clean code structure
+
+### Setup Instructions
+
+1. **Environment Variables**: Copy `.env.example` to `.env` and add your API keys:
+   ```
+   VITE_OPENAI_API_KEY=your_openai_api_key_here
+   VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
+   VITE_GOOGLE_CLOUD_VISION_API_KEY=your_google_cloud_vision_api_key_here
+   ```
+
+2. **Google Cloud Vision API Setup**:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select existing one
+   - Enable the Vision API
+   - Create credentials (API Key)
+   - Add the API key to your `.env` file
+
+3. **AI API Setup** (Optional - app works with mock data without these):
+   - **OpenAI**: Get API key from [OpenAI Platform](https://platform.openai.com/api-keys)
+   - **Anthropic**: Get API key from [Anthropic Console](https://console.anthropic.com/)
+
 ## Project info
 
 **URL**: https://lovable.dev/projects/8d57b989-e3bb-40d8-943a-40442334b800

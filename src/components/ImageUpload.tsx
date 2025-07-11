@@ -88,6 +88,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onTextExtracted, onImageSelec
     if (!selectedImage) return;
 
     setIsProcessing(true);
+    setUploadError(null);
+    
     try {
       console.log('Extracting text from image...');
       const extractedText = await extractTextFromImage(selectedImage);
@@ -95,12 +97,18 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onTextExtracted, onImageSelec
       if (extractedText.trim()) {
         console.log('Text extracted successfully:', extractedText.substring(0, 100) + '...');
         onTextExtracted(extractedText);
+        
+        // Clear the image after successful processing
+        setTimeout(() => {
+          clearImage();
+        }, 1000);
       } else {
         setUploadError('No text could be extracted from the image. Please try a clearer image.');
       }
     } catch (error) {
       console.error('OCR Error:', error);
-      setUploadError('Failed to extract text from image. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to extract text from image. Please try again.';
+      setUploadError(errorMessage);
     } finally {
       setIsProcessing(false);
     }

@@ -118,13 +118,16 @@ const Index = () => {
                   <Send className="h-5 w-5 text-purple-600" />
                   Submit Your Problem
                 </CardTitle>
+                <p className="text-sm text-gray-600 mt-2">
+                  Get production-ready code solutions with comprehensive error handling and best practices
+                </p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
                   <Tabs defaultValue="text" className="space-y-4">
                     <TabsList className="grid w-full grid-cols-2">
                       <TabsTrigger value="text">Text Input</TabsTrigger>
-                      <TabsTrigger value="image">Image Upload</TabsTrigger>
+                      <TabsTrigger value="image">Image Upload (OCR)</TabsTrigger>
                     </TabsList>
                     
                     <TabsContent value="text" className="space-y-4">
