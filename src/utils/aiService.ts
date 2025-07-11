@@ -1,6 +1,3 @@
-
-// AI Service for generating code solutions using OpenAI and Anthropic APIs
-
 interface Solution {
   code: string;
   explanation: string;
@@ -18,21 +15,19 @@ interface AIResponse {
   message: string;
 }
 
-// Configuration for API endpoints
 const OPENAI_API_URL = 'https://api.openai.com/v1/chat/completions';
 const ANTHROPIC_API_URL = 'https://api.anthropic.com/v1/messages';
 
-// API Keys - In production, these should be stored securely
-let OPENAI_API_KEY = '';
-let ANTHROPIC_API_KEY = '';
-
-export const setApiKeys = (openaiKey: string, anthropicKey: string) => {
-  OPENAI_API_KEY = openaiKey;
-  ANTHROPIC_API_KEY = anthropicKey;
+const getApiKeys = () => {
+  return {
+    openai: import.meta.env.VITE_OPENAI_API_KEY || '',
+    anthropic: import.meta.env.VITE_ANTHROPIC_API_KEY || ''
+  };
 };
 
-// Generate solution using OpenAI API
 const generateWithOpenAI = async (problem: string, language: 'java' | 'python'): Promise<Solution> => {
+  const { openai } = getApiKeys();
+  
   const prompt = `Generate a clean ${language} solution for this coding problem. Return ONLY the working code without any comments, explanations, or markdown formatting:
 
 ${problem}
@@ -46,7 +41,7 @@ Requirements:
   const response = await fetch(OPENAI_API_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${openai}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -69,10 +64,8 @@ Requirements:
   const data = await response.json();
   let code = data.choices[0]?.message?.content || '';
   
-  // Clean up the code
   code = code.replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
   
-  // Generate explanation separately
   const explanationPrompt = `Explain this ${language} code solution in a clear, step-by-step manner:
 
 ${code}`;
@@ -80,7 +73,7 @@ ${code}`;
   const explanationResponse = await fetch(OPENAI_API_URL, {
     method: 'POST',
     headers: {
-      'Authorization': `Bearer ${OPENAI_API_KEY}`,
+      'Authorization': `Bearer ${openai}`,
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
@@ -106,8 +99,9 @@ ${code}`;
   };
 };
 
-// Generate solution using Anthropic API
 const generateWithAnthropic = async (problem: string, language: 'java' | 'python'): Promise<Solution> => {
+  const { anthropic } = getApiKeys();
+  
   const prompt = `Generate a clean ${language} solution for this coding problem. Return ONLY the working code without any comments, explanations, or markdown formatting:
 
 ${problem}
@@ -123,7 +117,7 @@ Then on a new line starting with "EXPLANATION:", provide a brief explanation of 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
     headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
+      'x-api-key': anthropic,
       'Content-Type': 'application/json',
       'anthropic-version': '2023-06-01'
     },
@@ -142,7 +136,6 @@ Then on a new line starting with "EXPLANATION:", provide a brief explanation of 
   const data = await response.json();
   const content = data.content[0]?.text || '';
   
-  // Split content into code and explanation
   const parts = content.split('EXPLANATION:');
   let code = parts[0].replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
   const explanation = parts[1]?.trim() || 'Solution generated successfully.';
@@ -154,7 +147,6 @@ Then on a new line starting with "EXPLANATION:", provide a brief explanation of 
   };
 };
 
-// Mock solutions for fallback when APIs are not available
 const getMockSolution = (problem: string, language: 'java' | 'python'): Solution => {
   const problemLower = problem.toLowerCase();
   
@@ -202,7 +194,6 @@ if __name__ == "__main__":
     }
   }
 
-  // Generic solution
   const genericCode = language === 'python' 
     ? `def solve_problem():
     print("Solving the problem...")
@@ -232,8 +223,9 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
   console.log('Generating solutions for problem:', problem.substring(0, 100) + '...');
   
   try {
-    // Use primary API (OpenAI) for both languages
-    if (OPENAI_API_KEY) {
+    const { openai, anthropic } = getApiKeys();
+    
+    if (openai) {
       console.log('Using OpenAI API...');
       const [pythonSolution, javaSolution] = await Promise.all([
         generateWithOpenAI(problem, 'python'),
@@ -250,8 +242,7 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
       };
     }
     
-    // Fallback to Anthropic API
-    if (ANTHROPIC_API_KEY) {
+    if (anthropic) {
       console.log('Using Anthropic API...');
       const [pythonSolution, javaSolution] = await Promise.all([
         generateWithAnthropic(problem, 'python'),
@@ -268,7 +259,6 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
       };
     }
 
-    // Fallback to mock solutions for demo
     console.log('Using mock solutions (no API keys provided)...');
     await new Promise(resolve => setTimeout(resolve, 2000));
 
@@ -278,7 +268,7 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
         java: getMockSolution(problem, 'java')
       },
       status: 'success',
-      message: 'Demo solutions generated (connect API keys for real AI solutions)'
+      message: 'Demo solutions generated (add API keys to .env file for real AI solutions)'
     };
 
   } catch (error) {
@@ -293,4 +283,8 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
       message: 'API error occurred, showing demo solutions'
     };
   }
+};
+
+export const setApiKeys = (openaiKey: string, anthropicKey: string) => {
+  console.warn('setApiKeys is deprecated. Use .env file instead.');
 };

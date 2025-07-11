@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Code, Send, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -31,7 +30,16 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [showApiConfig, setShowApiConfig] = useState(true);
+  const [showApiConfig, setShowApiConfig] = useState(false);
+
+  useEffect(() => {
+    const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    const anthropicKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
+    
+    if (!openaiKey && !anthropicKey) {
+      setShowApiConfig(true);
+    }
+  }, []);
 
   const handleSubmit = async (input: string, isFromImage: boolean = false) => {
     if (!input.trim()) {
@@ -120,7 +128,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
-        {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
             <Code className="h-10 w-10 text-purple-600" />
@@ -134,7 +141,6 @@ const Index = () => {
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Input Section */}
           <div className="space-y-6">
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader>
@@ -204,7 +210,6 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            {/* Example Problems */}
             <Card className="shadow-lg border-0 bg-white/60 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="text-lg">Example Problems</CardTitle>
@@ -230,7 +235,6 @@ const Index = () => {
             </Card>
           </div>
 
-          {/* Output Section */}
           <div className="space-y-6">
             {error && (
               <Alert variant="destructive" className="border-red-200 bg-red-50">
@@ -277,12 +281,11 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="mt-12 text-center">
           <Separator className="mb-6" />
           <div className="flex flex-wrap justify-center items-center gap-4 text-sm text-gray-500">
             <Badge variant="secondary">Dual Language Solutions</Badge>
-            <Badge variant="secondary">OpenAI & Anthropic</Badge>
+            <Badge variant="secondary">Environment Variables</Badge>
             <Badge variant="secondary">Image OCR</Badge>
             <Badge variant="secondary">Syntax Highlighting</Badge>
           </div>
