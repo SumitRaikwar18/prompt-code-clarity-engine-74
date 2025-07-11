@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Code, Send, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +10,6 @@ import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
 import ImageUpload from "@/components/ImageUpload";
 import DualSolutionDisplay from "@/components/DualSolutionDisplay";
-import ApiKeyConfig from "@/components/ApiKeyConfig";
 import { generateSolution } from "@/utils/aiService";
 
 interface Solution {
@@ -30,16 +29,6 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [showApiConfig, setShowApiConfig] = useState(false);
-
-  useEffect(() => {
-    const openaiKey = import.meta.env.VITE_OPENAI_API_KEY;
-    const anthropicKey = import.meta.env.VITE_ANTHROPIC_API_KEY;
-    
-    if (!openaiKey && !anthropicKey) {
-      setShowApiConfig(true);
-    }
-  }, []);
 
   const handleSubmit = async (input: string, isFromImage: boolean = false) => {
     if (!input.trim()) {
@@ -103,28 +92,6 @@ const Index = () => {
     setUploadedImage(null);
   };
 
-  if (showApiConfig) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
-        <div className="container mx-auto px-4 py-8 max-w-2xl">
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Code className="h-10 w-10 text-purple-600" />
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
-                Code Solution Generator
-              </h1>
-            </div>
-            <p className="text-gray-600 text-lg">
-              Get instant solutions in both Java and Python
-            </p>
-          </div>
-
-          <ApiKeyConfig onKeysConfigured={() => setShowApiConfig(false)} />
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100">
       <div className="container mx-auto px-4 py-8 max-w-7xl">
@@ -140,8 +107,8 @@ const Index = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div className="space-y-6">
+        <div className="space-y-8">
+          <div className="max-w-4xl mx-auto">
             <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -210,12 +177,12 @@ const Index = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg border-0 bg-white/60 backdrop-blur-sm">
+            <Card className="shadow-lg border-0 bg-white/60 backdrop-blur-sm mt-6">
               <CardHeader>
                 <CardTitle className="text-lg">Example Problems</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   {[
                     "Write a function to reverse a string",
                     "Implement binary search algorithm",
@@ -225,7 +192,7 @@ const Index = () => {
                     <button
                       key={index}
                       onClick={() => setTextInput(example)}
-                      className="text-left w-full p-2 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
+                      className="text-left w-full p-3 text-sm text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded transition-colors"
                     >
                       • {example}
                     </button>
@@ -237,14 +204,14 @@ const Index = () => {
 
           <div className="space-y-6">
             {error && (
-              <Alert variant="destructive" className="border-red-200 bg-red-50">
+              <Alert variant="destructive" className="border-red-200 bg-red-50 max-w-4xl mx-auto">
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>{error}</AlertDescription>
               </Alert>
             )}
 
             {isLoading && (
-              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
+              <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm max-w-4xl mx-auto">
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-center py-12">
                     <div className="text-center">
@@ -262,11 +229,13 @@ const Index = () => {
             )}
 
             {solutions && (
-              <DualSolutionDisplay solutions={solutions} />
+              <div className="max-w-6xl mx-auto">
+                <DualSolutionDisplay solutions={solutions} />
+              </div>
             )}
 
             {!solutions && !isLoading && !error && (
-              <Card className="shadow-lg border-0 bg-white/60 backdrop-blur-sm">
+              <Card className="shadow-lg border-0 bg-white/60 backdrop-blur-sm max-w-4xl mx-auto">
                 <CardContent className="pt-6">
                   <div className="text-center py-12">
                     <Code className="h-16 w-16 text-gray-300 mx-auto mb-4" />
@@ -285,12 +254,12 @@ const Index = () => {
           <Separator className="mb-6" />
           <div className="flex flex-wrap justify-center items-center gap-4 text-sm text-gray-500">
             <Badge variant="secondary">Dual Language Solutions</Badge>
-            <Badge variant="secondary">Environment Variables</Badge>
+            <Badge variant="secondary">Clean Code Output</Badge>
             <Badge variant="secondary">Image OCR</Badge>
-            <Badge variant="secondary">Syntax Highlighting</Badge>
+            <Badge variant="secondary">Large Display</Badge>
           </div>
           <p className="mt-4 text-gray-400">
-            Generate working code solutions in both Java and Python simultaneously
+            Generate clean code solutions in both Java and Python simultaneously
           </p>
         </div>
       </div>

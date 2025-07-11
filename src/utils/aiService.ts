@@ -28,15 +28,9 @@ const getApiKeys = () => {
 const generateWithOpenAI = async (problem: string, language: 'java' | 'python'): Promise<Solution> => {
   const { openai } = getApiKeys();
   
-  const prompt = `Generate a clean ${language} solution for this coding problem. Return ONLY the working code without any comments, explanations, or markdown formatting:
+  const prompt = `Generate clean ${language} code for this problem. Return only working code without comments, explanations, or markdown formatting:
 
-${problem}
-
-Requirements:
-- No comments in the code
-- No explanations
-- Clean, working code only
-- Proper syntax and structure`;
+${problem}`;
 
   const response = await fetch(OPENAI_API_URL, {
     method: 'POST',
@@ -49,7 +43,7 @@ Requirements:
       messages: [
         {
           role: 'system',
-          content: `You are a coding expert. Generate clean, working ${language} code without any comments or explanations. Return only the code.`
+          content: `Generate clean ${language} code without comments or explanations. Return only code.`
         },
         {
           role: 'user',
@@ -66,7 +60,7 @@ Requirements:
   
   code = code.replace(/```\w*\n?/g, '').replace(/```/g, '').trim();
   
-  const explanationPrompt = `Explain this ${language} code solution in a clear, step-by-step manner:
+  const explanationPrompt = `Explain this ${language} code solution briefly:
 
 ${code}`;
 
@@ -84,7 +78,7 @@ ${code}`;
           content: explanationPrompt
         }
       ],
-      max_tokens: 500,
+      max_tokens: 300,
       temperature: 0.3
     })
   });
@@ -102,17 +96,11 @@ ${code}`;
 const generateWithAnthropic = async (problem: string, language: 'java' | 'python'): Promise<Solution> => {
   const { anthropic } = getApiKeys();
   
-  const prompt = `Generate a clean ${language} solution for this coding problem. Return ONLY the working code without any comments, explanations, or markdown formatting:
+  const prompt = `Generate clean ${language} code for this problem. Return only working code without comments or explanations:
 
 ${problem}
 
-Requirements:
-- No comments in the code
-- No explanations  
-- Clean, working code only
-- Proper syntax and structure
-
-Then on a new line starting with "EXPLANATION:", provide a brief explanation of how the solution works.`;
+Then provide brief explanation starting with "EXPLANATION:".`;
 
   const response = await fetch(ANTHROPIC_API_URL, {
     method: 'POST',
@@ -283,8 +271,4 @@ export const generateSolution = async (problem: string): Promise<AIResponse> => 
       message: 'API error occurred, showing demo solutions'
     };
   }
-};
-
-export const setApiKeys = (openaiKey: string, anthropicKey: string) => {
-  console.warn('setApiKeys is deprecated. Use .env file instead.');
 };
