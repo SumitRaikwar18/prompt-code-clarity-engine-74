@@ -7,7 +7,7 @@ An AI-powered application that generates high-quality, production-ready code sol
 ### Features
 
 - **Dual Language Solutions**: Get solutions in both Java and Python
-- **Image OCR**: Upload images of coding problems using Google Cloud Vision API
+- **Image OCR**: Upload images of coding problems using Tesseract.js and OCR.space API
 - **High-Quality Code**: Production-ready code with error handling and best practices
 - **Feedback System**: Report issues and help improve the AI
 - **Interactive Testing**: Built-in test cases and examples
@@ -19,19 +19,26 @@ An AI-powered application that generates high-quality, production-ready code sol
    ```
    VITE_OPENAI_API_KEY=your_openai_api_key_here
    VITE_ANTHROPIC_API_KEY=your_anthropic_api_key_here
-   VITE_GOOGLE_CLOUD_VISION_API_KEY=your_google_cloud_vision_api_key_here
+   VITE_OCR_SPACE_API_KEY=your_ocr_space_api_key_here
    ```
 
-2. **Google Cloud Vision API Setup**:
-   - Go to [Google Cloud Console](https://console.cloud.google.com/)
-   - Create a new project or select existing one
-   - Enable the Vision API
-   - Create credentials (API Key)
+2. **OCR.space API Setup** (Optional - Tesseract.js works without API key):
+   - Go to [OCR.space](https://ocr.space/ocrapi)
+   - Register for a free account
+   - Get your free API key (500 requests/day)
    - Add the API key to your `.env` file
 
 3. **AI API Setup** (Optional - app works with mock data without these):
    - **OpenAI**: Get API key from [OpenAI Platform](https://platform.openai.com/api-keys)
    - **Anthropic**: Get API key from [Anthropic Console](https://console.anthropic.com/)
+
+### OCR Features
+
+- **Tesseract.js**: Free, client-side OCR that works offline
+- **OCR.space API**: Backup OCR service with 500 free requests/day
+- **Smart Fallback**: Automatically tries multiple OCR methods
+- **File Support**: JPG, PNG, GIF, BMP images up to 10MB
+- **Mock OCR**: Works even without API keys for demonstration
 
 ## Project info
 
