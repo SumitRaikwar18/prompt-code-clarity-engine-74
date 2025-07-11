@@ -4,7 +4,7 @@ import { Upload, Image, X, FileImage, AlertCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Card, CardContent } from "@/components/ui/card";
-import { extractTextFromImage } from "@/utils/ocrService";
+import { extractTextFromImage, validateImageFile } from "@/utils/ocrService";
 
 interface ImageUploadProps {
   onTextExtracted: (text: string) => void;
@@ -21,19 +21,8 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onTextExtracted, onImageSelec
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validateFile = (file: File): string | null => {
-    // Check file type
-    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png'];
-    if (!allowedTypes.includes(file.type)) {
-      return 'Please upload a JPG or PNG image file.';
-    }
-
-    // Check file size (5MB limit)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
-    if (file.size > maxSize) {
-      return 'File size must be less than 5MB.';
-    }
-
-    return null;
+    const validation = validateImageFile(file);
+    return validation.valid ? null : validation.error || 'Invalid file';
   };
 
   const handleFile = async (file: File) => {
@@ -146,7 +135,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onTextExtracted, onImageSelec
             <input
               ref={inputRef}
               type="file"
-              accept="image/jpeg,image/jpg,image/png"
+              accept="image/jpeg,image/jpg,image/png,image/gif,image/bmp"
               onChange={handleChange}
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
             />
@@ -161,7 +150,7 @@ const ImageUpload: React.FC<ImageUploadProps> = ({ onTextExtracted, onImageSelec
                   Drop your image here, or click to browse
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  Supports JPG, PNG • Max 5MB
+                  Supports JPG, PNG, GIF, BMP • Max 10MB
                 </p>
               </div>
               
