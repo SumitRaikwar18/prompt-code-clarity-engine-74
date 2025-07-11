@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
+import FeedbackModal from "./FeedbackModal";
+import { submitFeedback } from "@/utils/feedbackService";
 
 interface Solution {
   code: string;
@@ -19,9 +21,10 @@ interface DualSolution {
 
 interface DualSolutionDisplayProps {
   solutions: DualSolution;
+  originalProblem: string;
 }
 
-const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions }) => {
+const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions, originalProblem }) => {
   const copyToClipboard = async (text: string, type: string) => {
     try {
       await navigator.clipboard.writeText(text);
@@ -36,6 +39,13 @@ const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions }) 
         description: "Unable to copy to clipboard",
         variant: "destructive"
       });
+    }
+  };
+
+  const handleFeedbackSubmit = async (feedbackData: any) => {
+    const result = await submitFeedback(feedbackData);
+    if (!result.success) {
+      throw new Error(result.message);
     }
   };
 
@@ -55,10 +65,10 @@ const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions }) 
       .split('\n')
       .map((line, index) => (
         <div key={index} className="flex hover:bg-gray-50 transition-colors">
-          <span className="select-none text-gray-400 text-sm w-12 flex-shrink-0 text-right pr-4 py-1 bg-gray-50 border-r">
+          <span className="select-none text-gray-400 text-sm w-16 flex-shrink-0 text-right pr-4 py-1 bg-gray-50 border-r">
             {index + 1}
           </span>
-          <span className="flex-1 px-4 py-1 font-mono text-base leading-relaxed">{line || ' '}</span>
+          <span className="flex-1 px-6 py-1 font-mono text-lg leading-relaxed">{line || ' '}</span>
         </div>
       ));
   };
@@ -74,21 +84,29 @@ const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions }) 
                 {solution.language.charAt(0).toUpperCase() + solution.language.slice(1)}
               </span>
             </CardTitle>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => copyToClipboard(solution.code, `${solution.language} Code`)}
-              className="flex items-center gap-2 hover:bg-gray-100"
-            >
-              <Copy className="h-4 w-4" />
-              Copy Code
-            </Button>
+            <div className="flex items-center gap-2">
+              <FeedbackModal
+                originalProblem={originalProblem}
+                generatedCode={solution.code}
+                language={solution.language}
+                onFeedbackSubmit={handleFeedbackSubmit}
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => copyToClipboard(solution.code, `${solution.language} Code`)}
+                className="flex items-center gap-2 hover:bg-gray-100"
+              >
+                <Copy className="h-4 w-4" />
+                Copy Code
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
           <div className="bg-white border border-gray-200 rounded-b-lg overflow-hidden">
-            <div className="max-h-[600px] overflow-y-auto">
-              <div className="text-base">
+            <div className="max-h-[800px] overflow-y-auto">
+              <div className="text-lg">
                 {formatCode(solution.code)}
               </div>
             </div>
@@ -166,6 +184,11 @@ const DualSolutionDisplay: React.FC<DualSolutionDisplayProps> = ({ solutions }) 
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
               <span className="text-gray-600">AI Generated</span>
+            </div>
+            <Separator orientation="vertical" className="h-4" />
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+              <span className="text-gray-600">Feedback Enabled</span>
             </div>
             <Separator orientation="vertical" className="h-4" />
             <div className="flex items-center gap-2">

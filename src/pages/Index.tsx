@@ -25,6 +25,7 @@ interface DualSolution {
 
 const Index = () => {
   const [textInput, setTextInput] = useState('');
+  const [originalProblem, setOriginalProblem] = useState('');
   const [solutions, setSolutions] = useState<DualSolution | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +44,7 @@ const Index = () => {
     setIsLoading(true);
     setError(null);
     setSolutions(null);
+    setOriginalProblem(input);
 
     try {
       console.log(`Generating solutions for: ${input.substring(0, 100)}...`);
@@ -87,6 +89,7 @@ const Index = () => {
 
   const clearAll = () => {
     setTextInput('');
+    setOriginalProblem('');
     setSolutions(null);
     setError(null);
     setUploadedImage(null);
@@ -103,7 +106,7 @@ const Index = () => {
             </h1>
           </div>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-            Get instant solutions in both Java and Python with AI-powered analysis
+            Get instant solutions in both Java and Python with AI-powered analysis and feedback system
           </p>
         </div>
 
@@ -230,7 +233,10 @@ const Index = () => {
 
             {solutions && (
               <div className="max-w-6xl mx-auto">
-                <DualSolutionDisplay solutions={solutions} />
+                <DualSolutionDisplay 
+                  solutions={solutions} 
+                  originalProblem={originalProblem}
+                />
               </div>
             )}
 
@@ -256,10 +262,11 @@ const Index = () => {
             <Badge variant="secondary">Dual Language Solutions</Badge>
             <Badge variant="secondary">Clean Code Output</Badge>
             <Badge variant="secondary">Image OCR</Badge>
+            <Badge variant="secondary">Feedback System</Badge>
             <Badge variant="secondary">Large Display</Badge>
           </div>
           <p className="mt-4 text-gray-400">
-            Generate clean code solutions in both Java and Python simultaneously
+            Generate clean code solutions with feedback system for continuous improvement
           </p>
         </div>
       </div>
